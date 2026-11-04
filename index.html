@@ -1,0 +1,564 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Laboratório de Educação Financeira</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: barra de abas fixa no topo, uma aula por tela, simuladores em painéis largos com resultado ao vivo. */
+:root{
+  --bg:#f3f6fa; --surface:#ffffff; --surface2:#e9eff7; --ink:#14233b; --muted:#53647e; --line:#d3dce9;
+  --accent:#0b7a75; --accent-ink:#ffffff; --accent-soft:#d6efec;
+  --tax:#d9820b; --tax-soft:#fbe9cf;
+  --good:#1b7f3b; --good-soft:#d9f1e0; --bad:#b3261e; --bad-soft:#fadcd9;
+  --navy:#16335f;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1727; --surface:#16223a; --surface2:#1e2d49; --ink:#e8eef8; --muted:#a3b2cb; --line:#2c3d5c;
+  --accent:#3fc7bf; --accent-ink:#06211f; --accent-soft:#12403f;
+  --tax:#f0a13c; --tax-soft:#44301030;
+  --good:#58d17c; --good-soft:#143a22; --bad:#ff8a80; --bad-soft:#47201d;
+  --navy:#0a1220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1727; --surface:#16223a; --surface2:#1e2d49; --ink:#e8eef8; --muted:#a3b2cb; --line:#2c3d5c;
+  --accent:#3fc7bf; --accent-ink:#06211f; --accent-soft:#12403f;
+  --tax:#f0a13c; --tax-soft:#44301030;
+  --good:#58d17c; --good-soft:#143a22; --bad:#ff8a80; --bad-soft:#47201d;
+  --navy:#0a1220; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.7rem,4vw,2.4rem)} h3{font-size:1.25rem}
+p{margin:0 0 .8em;max-width:68ch}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto}
+header.top{background:var(--navy);color:#fff;margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:18px max(16px,env(safe-area-inset-left,0px)) 0}
+header.top .wrap{display:flex;flex-direction:column;gap:12px}
+.brand{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.brand b{font-family:var(--f-display);font-size:1.35rem}
+.brand span{opacity:.75;font-size:.9rem}
+nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;padding-bottom:0}
+nav button{background:transparent;color:#fff;border:0;padding:10px 14px;border-radius:10px 10px 0 0;white-space:nowrap;opacity:.8;font-weight:600;font-size:.95rem}
+nav button[aria-current="true"]{background:var(--bg);color:var(--ink);opacity:1}
+.stickyfix{position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+main{padding-top:28px}
+section[data-view]{display:none}
+section[data-view].on{display:block}
+.lead{font-size:1.1rem;color:var(--muted);margin-top:8px}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.goal{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 12px 12px 0;margin:18px 0;max-width:72ch}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-width:0}
+.card h3{margin-bottom:6px}
+.card .ex{color:var(--muted);font-size:.95rem}
+.sim{background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:20px;margin:26px 0;min-width:0}
+.sim>.simhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.badge{background:var(--accent);color:var(--accent-ink);font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px}
+.sub{font-family:var(--f-display);font-size:1.5rem;margin:34px 0 10px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.88rem;font-weight:600;color:var(--muted);min-width:150px;flex:1}
+input[type=number],input[type=text],select{font:inherit;padding:9px 11px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 16px;font-weight:700}
+.btn.alt{background:var(--surface2);color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--surface2);border:2px solid var(--line);color:var(--ink);border-radius:99px;padding:8px 14px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip.ok{background:var(--good-soft);border-color:var(--good)} .chip.no{background:var(--bad-soft);border-color:var(--bad)}
+.out{background:var(--bg);border-radius:12px;padding:14px 16px;margin-top:14px}
+.big{font-family:var(--f-display);font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums}
+.stats{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat small{display:block;color:var(--muted);font-weight:600}
+.stat .v{font-family:var(--f-display);font-size:1.45rem;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{display:flex;height:42px;border-radius:10px;overflow:hidden;border:1px solid var(--line);margin:10px 0}
+.bar>div{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;transition:width .35s;min-width:0;overflow:hidden;white-space:nowrap}
+.seg-prod{background:var(--accent)} .seg-tax{background:var(--tax);color:#1d1400}
+.fb{margin-top:10px;padding:10px 14px;border-radius:10px;font-weight:600}
+.fb.ok{background:var(--good-soft);color:var(--good)} .fb.no{background:var(--bad-soft);color:var(--bad)} .fb.info{background:var(--surface2);color:var(--ink)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface2);font-weight:700}
+tr:last-child td{border-bottom:0}
+.pill{border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:700;background:var(--surface2)}
+.flip{perspective:800px;min-height:112px}
+.flip button{width:100%;height:100%;min-height:112px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink)}
+.flip button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.flip b{font-family:var(--f-display);font-size:1.1rem;display:block}
+.flip span{display:block;color:var(--muted);font-size:.93rem;margin-top:4px}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.step{flex:1;min-width:130px;border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);text-align:center;font-weight:600;font-size:.92rem;transition:.2s}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.blocks{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+.blocks i{width:18px;height:18px;border-radius:4px;background:var(--accent)}
+.blocks.after i{background:var(--tax)}
+.blocks i.gone{background:transparent;border:1.5px dashed var(--line)}
+svg text{fill:var(--muted);font-family:var(--f-body);font-size:12px}
+.q{font-weight:700;font-size:1.1rem;margin-bottom:10px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;background:var(--surface2);border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 14px;font-weight:500}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--good-soft);border-color:var(--good)} .opt.no{background:var(--bad-soft);border-color:var(--bad)}
+.progress{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.progress>div{height:100%;background:var(--accent);transition:width .3s}
+.cols2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.hint{color:var(--muted);font-size:.9rem}
+.mini{font-size:.85rem;color:var(--muted)}
+.tt{display:flex;justify-content:flex-end;padding:8px 0 0}
+.tt button{background:transparent;border:1.5px solid rgba(255,255,255,.4);color:#fff;border-radius:99px;padding:4px 12px;font-size:.8rem}
+footer{margin-top:50px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:520px){.big{font-size:1.5rem}.sim{padding:14px}}
+</style>
+
+<div class="stickyfix">
+<header class="top"><div class="wrap">
+  <div class="brand"><b>Laboratório de Educação Financeira</b><span>9º ano · 3º trimestre · Prof. Gabriel Martins da Silva</span></div>
+  <nav id="nav" aria-label="Aulas"></nav>
+</div></header>
+</div>
+
+<main class="wrap">
+
+<!-- ================= INÍCIO ================= -->
+<section data-view id="inicio">
+  <span class="tag">Bem-vindo</span>
+  <h2>Do primeiro emprego ao preço do lanche</h2>
+  <p class="lead">Seis aulas, cada uma com explicação curta e um simulador para ver o conceito funcionando. Escolha uma aula abaixo ou use as abas no topo.</p>
+  <div class="grid" id="homegrid" style="margin-top:20px"></div>
+  <p class="hint" style="margin-top:20px">Dica para a aula: projete o simulador, peça uma previsão da turma e só depois mexa nos controles.</p>
+</section>
+
+<!-- ================= AULA 39 ================= -->
+<section data-view id="aula-39">
+  <span class="tag">Aula 39 · Trabalho, emprego e renda</span>
+  <h2>Todo trabalho é emprego? Todo emprego dá renda?</h2>
+  <div class="goal"><b>Objetivo:</b> diferenciar trabalho, emprego e renda e entender as mudanças recentes no mundo do trabalho.</div>
+  <div class="grid">
+    <div class="card"><h3>Trabalho</h3><p>Qualquer atividade humana para transformar, criar ou produzir algo útil.</p><p class="ex">Estudar, voluntariado, cozinhar em casa.</p></div>
+    <div class="card"><h3>Emprego</h3><p>Relação formal, com vínculo, obrigações e direitos definidos em contrato.</p><p class="ex">Carteira assinada (CLT), Jovem Aprendiz.</p></div>
+    <div class="card"><h3>Renda</h3><p>Remuneração ou retorno financeiro recebido por trabalho, serviços ou investimentos.</p><p class="ex">Salário, comissão, lucro, rendimento.</p></div>
+  </div>
+
+  <div class="sim" id="sim-3cantos">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Jogo dos 3 cantos</h3></div>
+    <p>Marque <b>todos</b> os conceitos que a situação combina e clique em Conferir.</p>
+    <div id="g3-box"></div>
+  </div>
+
+  <div class="sim" id="sim-modal">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Como as pessoas obtêm renda hoje</h3></div>
+    <p>Escolha duas modalidades e compare. As notas de 1 a 5 são uma leitura didática dos pontos da tabela da aula, não dados oficiais.</p>
+    <div class="row">
+      <label class="f">Modalidade A<select id="mA"></select></label>
+      <label class="f">Modalidade B<select id="mB"></select></label>
+    </div>
+    <div id="modal-out"></div>
+  </div>
+
+  <div class="sub">O mundo do trabalho mudou</div>
+  <div class="cols2">
+    <div class="card"><h3>Gig Economy</h3><p>Trabalhos por aplicativos e redes sociais criaram profissões novas. Trazem <b>autonomia</b> (horários flexíveis), mas muitas vezes <b>insegurança</b>: sem férias e aposentadoria.</p></div>
+    <div class="card"><h3>Automação e IA</h3><p>Máquinas assumem tarefas repetitivas. Criatividade, empatia e aprendizado contínuo ganham valor.</p></div>
+  </div>
+  <div class="sub">Planejando a renda</div>
+  <div class="chips" aria-label="Pilares do planejamento"><span class="chip">Estudo e qualificação</span><span class="chip">Reserva de emergência</span><span class="chip">Projeto de vida</span><span class="chip">Direitos e organização</span></div>
+</section>
+
+<!-- ================= AULA 40 ================= -->
+<section data-view id="aula-40">
+  <span class="tag">Aula 40 · Profissão e habilidades</span>
+  <h2>Hard skills e soft skills: o equilíbrio que o mercado procura</h2>
+  <div class="goal"><b>Objetivo:</b> identificar interesses, aptidões e competências para o planejamento de carreira.</div>
+  <div class="cols2">
+    <div class="card"><h3>Hard skills</h3><p>Habilidades <b>técnicas</b>, aprendidas estudando e treinando.</p><p class="ex">Saber inglês, usar Excel, programar, operar uma máquina, técnicas de enfermagem.</p></div>
+    <div class="card"><h3>Soft skills</h3><p>Habilidades <b>socioemocionais</b>: como você se comporta e se relaciona.</p><p class="ex">Trabalho em equipe, comunicação clara, criatividade, empatia, adaptabilidade.</p></div>
+  </div>
+  <p style="margin-top:14px"><b>Aprendizado contínuo:</b> nunca parar de aprender. Profissões mudam, habilidades ficam.</p>
+
+  <div class="sim" id="sim-skill">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Classificador de habilidades</h3></div>
+    <p>Para cada habilidade, escolha <b>Hard</b> ou <b>Soft</b>.</p>
+    <div id="skill-list" class="grid"></div>
+    <div id="skill-score" class="fb info" style="margin-top:14px">Acertos: 0 de 10</div>
+  </div>
+
+  <div class="sim" id="sim-perfil">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Mapeie o seu perfil</h3></div>
+    <p>Marque as habilidades que você já demonstra. O gráfico mostra o equilíbrio entre hard e soft.</p>
+    <div class="chips" id="perfil-chips"></div>
+    <div id="perfil-out" class="out"></div>
+  </div>
+
+  <div class="sim" id="sim-prof">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Equipe fantástica: profissão do futuro</h3></div>
+    <label class="f" style="max-width:420px">Escolha a profissão<select id="prof-sel"></select></label>
+    <div id="prof-out"></div>
+  </div>
+
+  <div class="goal"><b>Conexão com finanças:</b> metas de carreira ajudam a traçar metas financeiras (custo de se capacitar, expectativa salarial e estabilidade). Investir nas próprias competências é o melhor investimento.</div>
+</section>
+
+<!-- ================= AULA 41 ================= -->
+<section data-view id="aula-41">
+  <span class="tag">Aula 41 · Jovem Aprendiz</span>
+  <h2>Como conseguir emprego se toda vaga pede experiência?</h2>
+  <div class="goal"><b>Objetivo:</b> compreender direitos, deveres e o funcionamento da Lei do Aprendiz como porta de entrada formal no mercado.</div>
+  <div class="grid">
+    <div class="card"><h3>Base legal</h3><p>Lei nº 10.097/2000.</p></div>
+    <div class="card"><h3>Público</h3><p>Jovens de <b>14 a 24 anos incompletos</b>.</p></div>
+    <div class="card"><h3>Empresas</h3><p>Médio e grande porte são obrigadas. Cota de 5% a 15% das funções que exigem formação.</p></div>
+    <div class="card"><h3>Contrato</h3><p>Duração máxima de <b>2 anos</b>.</p></div>
+  </div>
+
+  <div class="sub">Formação dual</div>
+  <div class="cols2">
+    <div class="card"><h3>Prático: na empresa</h3><p>Vivência real de mercado, com supervisão profissional constante.</p></div>
+    <div class="card"><h3>Teórico: entidade formadora</h3><p>Aulas em parceiros como CIEE, SENAI ou SENAC. Escola obrigatória: é preciso estar matriculado e frequentando.</p></div>
+  </div>
+
+  <div class="sim" id="sim-elig">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Eu posso ser Jovem Aprendiz?</h3></div>
+    <div class="row">
+      <label class="f">Idade<input type="number" id="el-age" min="10" max="40" value="15"></label>
+      <label class="f">Está matriculado e frequentando a escola?<select id="el-school"><option value="1">Sim</option><option value="0">Não</option></select></label>
+    </div>
+    <div id="el-out"></div>
+  </div>
+
+  <div class="sim" id="sim-sal">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Quanto rende um contrato de aprendizagem</h3></div>
+    <p>Salário mínimo hora × horas trabalhadas, mais FGTS de 2% e 13º proporcional. É uma estimativa didática. Confira o salário mínimo vigente e ajuste o campo.</p>
+    <div class="row">
+      <label class="f">Salário mínimo (R$)<input type="number" id="sal-min" min="0" step="1" value="1621"></label>
+      <label class="f">Horas por dia<select id="sal-h"><option value="4">4 horas</option><option value="6" selected>6 horas</option></select></label>
+      <label class="f">Duração do contrato: <span id="sal-mv">12</span> meses<input type="range" id="sal-m" min="1" max="24" value="12"></label>
+    </div>
+    <div class="stats" id="sal-out"></div>
+  </div>
+
+  <div class="sub">Direitos e deveres (clique para destacar)</div>
+  <div class="grid" id="dd"></div>
+  <div class="goal" style="margin-top:20px"><b>Porta de entrada:</b> independência financeira, crescimento profissional e inclusão social. A escola é a prioridade número um.</div>
+</section>
+
+<!-- ================= AULA 46 ================= -->
+<section data-view id="aula-46">
+  <span class="tag">Aula 46 · Tributos na prática</span>
+  <h2>Para onde vai a parte invisível dos R$ 5 do biscoito?</h2>
+  <div class="goal"><b>Objetivo:</b> diferenciar impostos, taxas e contribuições e identificar como incidem sobre renda, patrimônio e consumo.</div>
+  <div class="grid">
+    <div class="card"><h3>Impostos</h3><p>Cobrados sobre o que você ganha, compra ou possui.</p></div>
+    <div class="card"><h3>Taxas</h3><p>Pagas por serviços diretos, como emitir documento ou coletar lixo.</p></div>
+    <div class="card"><h3>Contribuições</h3><p>Voltadas à previdência, saúde e seguridade social.</p></div>
+  </div>
+
+  <div class="sim" id="sim-det">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Detetives do imposto</h3></div>
+    <p>Escolha um item. A barra mostra quanto do preço é imposto. Você pode também digitar um valor e uma porcentagem.</p>
+    <div class="chips" id="det-chips"></div>
+    <div class="row" style="margin-top:12px">
+      <label class="f">Preço (R$)<input type="number" id="det-p" min="0" step="0.5" value="120"></label>
+      <label class="f">Imposto (%)<input type="number" id="det-t" min="0" max="100" step="0.5" value="15"></label>
+    </div>
+    <div id="det-out"></div>
+  </div>
+
+  <div class="sub">Onde os tributos incidem</div>
+  <div class="sim" id="sim-inc">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Renda, patrimônio ou consumo?</h3></div>
+    <div id="inc-box"></div>
+  </div>
+
+  <div class="sub">Quem arrecada o quê</div>
+  <p>A arrecadação é dividida em três esferas. Clique numa linha para ver os exemplos.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Esfera</th><th>Exemplos de impostos</th><th>Para onde vai o dinheiro?</th></tr></thead>
+    <tbody id="esf-body"></tbody>
+  </table></div>
+  <div id="esf-note" class="fb info">Escolha uma esfera na tabela.</div>
+</section>
+
+<!-- ================= AULA 47 ================= -->
+<section data-view id="aula-47">
+  <span class="tag">Aula 47 · Função social dos impostos</span>
+  <h2>De onde vem e para onde vai o dinheiro coletivo</h2>
+  <div class="goal"><b>Objetivo:</b> analisar como os impostos, ao financiar serviços essenciais, geram retorno para a sociedade.</div>
+  <p>O imposto é a arrecadação do Estado sobre renda, consumo e patrimônio para garantir direitos previstos na Constituição. Há <b>solidariedade social</b> (quem tem ou consome mais contribui mais) e <b>não há destinação única</b>. Imposto não é taxa de serviço individual.</p>
+
+  <div class="sim" id="sim-orc">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Onde colocar o dinheiro da cidade?</h3></div>
+    <p>Distribua os 100 pontos do orçamento entre os 4 pilares e veja o retorno social. Os valores são fictícios, para uma cidade com R$ 10 milhões.</p>
+    <div id="orc-sliders" class="grid"></div>
+    <div id="orc-total" class="fb info"></div>
+    <div id="orc-out" class="grid" style="margin-top:12px"></div>
+    <button class="btn alt" id="orc-eq" style="margin-top:12px">Dividir igualmente</button>
+  </div>
+
+  <div class="sim" id="sim-ciclo">
+    <div class="simhead"><span class="badge">Simulador</span><h3>O ciclo transparente do imposto</h3></div>
+    <div class="steps" id="ciclo-steps"></div>
+    <div id="ciclo-txt" class="out"></div>
+    <div class="row" style="margin-top:12px"><button class="btn alt" id="ciclo-prev">Anterior</button><button class="btn" id="ciclo-next">Próximo</button></div>
+  </div>
+
+  <div class="sim" id="sim-aud">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Auditores do bairro</h3></div>
+    <p><b>Cenário:</b> a rua da escola está cheia de buracos e sem iluminação, o que prejudica a segurança à noite.</p>
+    <div class="grid" id="aud-box"></div>
+  </div>
+</section>
+
+<!-- ================= AULA 48 ================= -->
+<section data-view id="aula-48">
+  <span class="tag">Aula 48 · Inflação, tributos e poder de compra</span>
+  <h2>Por que o lanche de R$ 5 hoje custa R$ 8?</h2>
+  <div class="goal"><b>Objetivo:</b> conectar o impacto dos tributos no consumo com a inflação no planejamento financeiro.</div>
+  <div class="cols2">
+    <div class="card"><h3>Inflação</h3><p>Aumento contínuo e geral dos preços ao longo do tempo.</p></div>
+    <div class="card"><h3>Poder de compra</h3><p>Quantidade de coisas que o seu dinheiro consegue comprar. Quando a inflação sobe, o dinheiro perde valor.</p></div>
+  </div>
+  <p style="margin-top:14px"><b>Imposto embutido:</b> no Brasil o tributo já está somado ao preço final. Ex.: um refrigerante de R$ 6,00 tem cerca de R$ 2,70 de impostos.</p>
+
+  <div class="sim" id="sim-inf">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Inflação e poder de compra</h3></div>
+    <div class="row">
+      <label class="f">Preço hoje (R$)<input type="number" id="inf-p" min="0.5" step="0.5" value="5"></label>
+      <label class="f">Dinheiro disponível (R$)<input type="number" id="inf-d" min="1" step="1" value="50"></label>
+      <label class="f">Inflação por ano: <span id="inf-iv">10</span>%<input type="range" id="inf-i" min="0" max="30" value="10"></label>
+      <label class="f">Prazo: <span id="inf-nv">5</span> anos<input type="range" id="inf-n" min="1" max="15" value="5"></label>
+    </div>
+    <div id="inf-chart"></div>
+    <div class="stats" id="inf-stats"></div>
+    <p class="mini" style="margin-top:10px">Cada quadrado é um item que o dinheiro compra.</p>
+    <div id="inf-blocks"></div>
+  </div>
+
+  <div class="sim" id="sim-imp">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Tributos e inflação juntos</h3></div>
+    <p>Como o imposto é uma porcentagem, quando o custo sobe o valor do imposto em reais sobe também.</p>
+    <div class="row">
+      <label class="f">Custo de produção (R$)<input type="number" id="imp-c" min="1" step="1" value="100"></label>
+      <label class="f">Inflação no custo: <span id="imp-iv">10</span>%<input type="range" id="imp-i" min="0" max="40" value="10"></label>
+      <label class="f">Imposto sobre o preço: <span id="imp-tv">30</span>%<input type="range" id="imp-t" min="0" max="60" value="30"></label>
+    </div>
+    <div class="stats" id="imp-out"></div>
+  </div>
+
+  <div class="sim" id="sim-plan">
+    <div class="simhead"><span class="badge">Simulador</span><h3>Desafio do planejamento</h3></div>
+    <p>Uma família tem R$ 200 por semana. Com inflação de 10% e tributos, a mesma compra agora custa <b>R$ 230</b>. O que ela faz?</p>
+    <div class="chips" id="plan-chips"></div>
+    <div id="plan-out"></div>
+  </div>
+
+  <div class="sub">Certo ou errado?</div>
+  <div id="ce-box"></div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section data-view id="quiz">
+  <span class="tag">Revisão</span>
+  <h2>Quiz final</h2>
+  <p class="lead">12 perguntas sobre as seis aulas, com Verdadeiro ou Falso no meio.</p>
+  <div class="sim" id="quiz-box"></div>
+</section>
+
+<footer>Conteúdo baseado nas aulas 39, 40, 41, 46, 47 e 48 de Educação Financeira (9º ano). Valores e porcentagens dos simuladores são didáticos.
+ <div class="tt"><button id="theme" style="border-color:var(--line);color:var(--muted)">Alternar tema</button></div></footer>
+</main>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const pct=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- navegação ---------- */
+const VIEWS=[['inicio','Início'],['aula-39','39 · Trabalho'],['aula-40','40 · Habilidades'],['aula-41','41 · Jovem Aprendiz'],['aula-46','46 · Tributos'],['aula-47','47 · Função social'],['aula-48','48 · Inflação'],['quiz','Quiz']];
+$('#nav').innerHTML=VIEWS.map(([id,t])=>`<button data-go="${id}">${t}</button>`).join('');
+$('#homegrid').innerHTML=VIEWS.slice(1,7).map(([id,t])=>{
+ const d={ 'aula-39':'Trabalho x emprego x renda. Jogo dos 3 cantos.','aula-40':'Hard e soft skills. Mapeie seu perfil.','aula-41':'Lei da Aprendizagem. Calculadora do contrato.','aula-46':'Impostos, taxas e esferas. Detetives do imposto.','aula-47':'Função social. Orçamento da cidade.','aula-48':'Inflação e poder de compra. Planejamento.'}[id];
+ return `<div class="card"><h3>${t.replace(' · ',' · ')}</h3><p>${d}</p><button class="btn" data-go="${id}">Abrir aula</button></div>`}).join('');
+function show(id){
+  if(!VIEWS.some(v=>v[0]===id)) id='inicio';
+  $$('section[data-view]').forEach(s=>s.classList.toggle('on',s.id===id));
+  $$('#nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'true':'false'));
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]'); if(b){location.hash=b.dataset.go}});
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('#theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
+
+/* ---------- Aula 39: 3 cantos ---------- */
+const SIT=[
+ ['Ana ajuda na organização da biblioteca do bairro sem receber dinheiro.',['T'],'Voluntariado: é trabalho, mas sem emprego nem renda.'],
+ ['Lucas tem 15 anos e trabalha numa farmácia como Jovem Aprendiz, com carteira assinada.',['T','E','R'],'Há atividade (trabalho), vínculo formal (emprego) e salário (renda).'],
+ ['Mariana faz brigadeiros no fim de semana e vende na escola.',['T','R'],'Empreendedorismo: trabalho que gera renda, sem emprego formal.'],
+ ['Carlos dirige o carro próprio atendendo chamados por aplicativo à noite.',['T','R'],'Trabalho autônomo com renda, sem vínculo de emprego.'],
+ ['Um jovem de 13 anos cuida do irmão menor enquanto os pais trabalham.',['T'],'É trabalho, mas não é emprego e não gera renda.'],
+ ['Um criador de conteúdo posta vídeos todos os dias e recebe por publicidade.',['T','R'],'Trabalho que gera renda, sem contrato de emprego.']];
+let gi=0,gsc=0,gsel=new Set(),gdone=false;
+function g3(){
+  const box=$('#g3-box');
+  if(gi>=SIT.length){box.innerHTML=`<div class="out"><div class="big">${gsc} de ${SIT.length}</div><p>Pontuação final.</p><button class="btn" id="g3-r">Jogar de novo</button></div>`;$('#g3-r').onclick=()=>{gi=0;gsc=0;g3()};return}
+  gsel=new Set();gdone=false;
+  box.innerHTML=`<div class="mini">Situação ${gi+1} de ${SIT.length}</div><p class="q">${esc(SIT[gi][0])}</p>
+   <div class="chips" id="g3-c">${[['T','Trabalho'],['E','Emprego'],['R','Renda']].map(([k,n])=>`<button class="chip" data-k="${k}" aria-pressed="false">${n}</button>`).join('')}</div>
+   <div class="row" style="margin-top:12px"><button class="btn" id="g3-ok">Conferir</button><button class="btn alt" id="g3-nx" hidden>Próxima</button></div><div id="g3-fb"></div>`;
+  $$('#g3-c .chip').forEach(c=>c.onclick=()=>{if(gdone)return;const k=c.dataset.k;gsel.has(k)?gsel.delete(k):gsel.add(k);c.setAttribute('aria-pressed',gsel.has(k))});
+  $('#g3-ok').onclick=()=>{if(gdone)return;gdone=true;const right=SIT[gi][1];const ok=right.length===gsel.size&&right.every(k=>gsel.has(k));if(ok)gsc++;
+    $$('#g3-c .chip').forEach(c=>{const k=c.dataset.k;c.classList.add(right.includes(k)?'ok':(gsel.has(k)?'no':''))});
+    $('#g3-fb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Certo! ':'Quase. '}${esc(SIT[gi][2])}</div>`;$('#g3-ok').hidden=true;$('#g3-nx').hidden=false};
+  $('#g3-nx').onclick=()=>{gi++;g3()};
+}
+g3();
+
+/* modalidades */
+const MOD={
+ 'Emprego formal (CLT)':{how:'Contrato de trabalho com carteira assinada.',pro:'Estabilidade, 13º salário, férias e FGTS.',con:'Horários rígidos e menor flexibilidade.',s:[5,2,5]},
+ 'Jovem Aprendiz (14 a 24 anos)':{how:'Primeira oportunidade formal alinhada aos estudos.',pro:'Capacitação prática, salário e direitos.',con:'Exige estar estudando e com boas notas.',s:[4,2,5]},
+ 'Autônomo / MEI':{how:'Presta serviços ou vende produtos próprios.',pro:'Autonomia, flexibilidade e independência.',con:'Renda variável; precisa de reserva financeira.',s:[2,5,3]},
+ 'Trabalho informal / bicos':{how:'Sem contrato formal de trabalho.',pro:'Acesso rápido à renda imediata.',con:'Sem proteção social ou garantias futuras.',s:[1,4,1]}};
+['mA','mB'].forEach((id,i)=>{$('#'+id).innerHTML=Object.keys(MOD).map(k=>`<option>${k}</option>`).join('');$('#'+id).selectedIndex=i===0?0:2});
+function modal(){
+  const names=[$('#mA').value,$('#mB').value];const crit=['Estabilidade','Flexibilidade','Proteção social'];
+  $('#modal-out').innerHTML=`<div class="cols2" style="margin-top:12px">${names.map(n=>{const m=MOD[n];return `<div class="card"><h3>${n}</h3><p>${m.how}</p><p><b>Vantagem:</b> ${m.pro}</p><p><b>Atenção:</b> ${m.con}</p>
+   ${crit.map((c,i)=>`<div class="mini">${c}</div><div class="bar" style="height:18px;margin:2px 0 8px"><div class="seg-prod" style="width:${m.s[i]*20}%"></div></div>`).join('')}</div>`}).join('')}</div>`;
+}
+$('#mA').onchange=$('#mB').onchange=modal;modal();
+
+/* ---------- Aula 40 ---------- */
+const SK=[['Saber inglês','H'],['Empatia','S'],['Mexer no Excel','H'],['Comunicação clara','S'],['Programar um aplicativo','H'],['Trabalho em equipe','S'],['Operar uma máquina','H'],['Criatividade','S'],['Técnicas de enfermagem','H'],['Adaptabilidade','S']];
+let skSc=0;const skDone=new Set();
+$('#skill-list').innerHTML=SK.map(([n,t],i)=>`<div class="card"><b>${n}</b><div class="chips" style="margin-top:8px" data-i="${i}"><button class="chip" data-a="H">Hard</button><button class="chip" data-a="S">Soft</button></div></div>`).join('');
+$$('#skill-list .chip').forEach(b=>b.onclick=()=>{const w=b.parentElement;const i=+w.dataset.i;if(skDone.has(i))return;skDone.add(i);const ok=SK[i][1]===b.dataset.a;if(ok)skSc++;
+  b.classList.add(ok?'ok':'no');if(!ok)w.querySelector(`[data-a="${SK[i][1]}"]`).classList.add('ok');
+  $('#skill-score').textContent=`Acertos: ${skSc} de ${SK.length}`+(skDone.size===SK.length?(skSc>=8?'. Muito bem!':'. Releia as definições e tente de novo.'):'')});
+const PERF=SK.map(s=>s.slice());const perfSel=new Set();
+$('#perfil-chips').innerHTML=PERF.map(([n,t],i)=>`<button class="chip" aria-pressed="false" data-i="${i}">${n}</button>`).join('');
+function perfil(){const h=[...perfSel].filter(i=>PERF[i][1]==='H').length,s=perfSel.size-h,tot=h+s;
+  let msg='Marque algumas habilidades para ver o resultado.';
+  if(tot){msg=h>s+1?'Seu perfil é mais técnico. Que tal treinar comunicação e trabalho em equipe?':s>h+1?'Seu perfil é mais comportamental. Que tal buscar cursos para ganhar uma habilidade técnica?':'Bom equilíbrio entre hard e soft skills. Continue aprendendo.'}
+  $('#perfil-out').innerHTML=`<div class="bar"><div class="seg-prod" style="width:${tot?h/tot*100:50}%">Hard ${h}</div><div class="seg-tax" style="width:${tot?s/tot*100:50}%">Soft ${s}</div></div><p style="margin:0">${msg}</p>`}
+$$('#perfil-chips .chip').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;perfSel.has(i)?perfSel.delete(i):perfSel.add(i);b.setAttribute('aria-pressed',perfSel.has(i));perfil()});perfil();
+const PROF={'Designer de Games Ecológicos':[['Modelagem 3D','Conhecimento de meio ambiente'],['Criatividade','Trabalho em equipe']],'Engenheiro de Robôs de Resgate':[['Programação','Mecânica e eletrônica'],['Resiliência sob pressão','Comunicação clara']],'Especialista em I.A.':[['Programação e dados','Inglês técnico'],['Pensamento crítico','Adaptabilidade']]};
+$('#prof-sel').innerHTML=Object.keys(PROF).map(k=>`<option>${k}</option>`).join('');
+function prof(){const [h,s]=PROF[$('#prof-sel').value];$('#prof-out').innerHTML=`<div class="cols2" style="margin-top:12px"><div class="card"><h3>2 hard skills</h3><p>${h.join('<br>')}</p></div><div class="card"><h3>2 soft skills</h3><p>${s.join('<br>')}</p></div></div><p class="mini">Sugestão de exemplo. Na atividade, o grupo escolhe as suas e aponta a soft skill que reconhece no colega.</p>`}
+$('#prof-sel').onchange=prof;prof();
+
+/* ---------- Aula 41 ---------- */
+function elig(){const a=+$('#el-age').value,sc=$('#el-school').value==='1';let ok=true,m=[];
+  if(!(a>=14&&a<24)){ok=false;m.push(a<14?'A idade mínima é 14 anos.':'O limite é 24 anos incompletos (até 23 anos e 11 meses).')}
+  if(!sc){ok=false;m.push('É obrigatório estar matriculado e frequentando a escola.')}
+  $('#el-out').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Sim! Você está dentro dos requisitos. Prepare o currículo e pesquise entidades formadoras e empresas com programas abertos.':m.join(' ')}</div>`}
+$('#el-age').oninput=$('#el-school').onchange=elig;elig();
+function sal(){const min=+$('#sal-min').value||0,h=+$('#sal-h').value,m=+$('#sal-m').value;$('#sal-mv').textContent=m;
+  const hora=min/220,mes=hora*h*5*52/12,fgts=mes*0.02,d13=mes/12;const tot=(mes+fgts+d13)*m;
+  $('#sal-out').innerHTML=[['Valor da hora',brl(hora)],['Salário mensal estimado',brl(mes)],['FGTS por mês (2%)',brl(fgts)],['13º por mês (1/12)',brl(d13)],[`Total em ${m} meses`,brl(tot)]].map(([k,v])=>`<div class="stat"><small>${k}</small><div class="v">${v}</div></div>`).join('')}
+$('#sal-min').oninput=$('#sal-h').onchange=$('#sal-m').oninput=sal;sal();
+const DD=[['CTPS assinada','Registro formal desde o primeiro dia.','d'],['Salário mínimo hora','Remuneração proporcional às horas trabalhadas.','d'],['FGTS de 2%','Depósito mensal com alíquota especial.','d'],['Férias','Remuneradas, no período escolar.','d'],['13º salário','Integral ou proporcional.','d'],['Vale-transporte','Casa, empresa e escola.','d'],
+ ['Educação como prioridade','Frequência e bom desempenho são obrigatórios.','v'],['Participar da entidade formadora','Aulas, atividades e avaliações.','v'],['Conduta ética','Ética, pontualidade e responsabilidade.','v'],['Respeitar as normas','Regulamentos e cultura da empresa.','v']];
+$('#dd').innerHTML=DD.map(([t,x,k])=>`<div class="flip"><button aria-pressed="false"><span class="pill">${k==='d'?'Direito':'Dever'}</span><b>${t}</b><span>${x}</span></button></div>`).join('');
+$$('#dd button').forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true'));
+
+/* ---------- Aula 46 ---------- */
+const ITEMS=[['Tênis de corrida',200,35],['Botijão de gás',120,15],['Smartphone',1000,40],['Ingresso de cinema',30,15],['Caderno escolar',20,35],['Refrigerante / lanche',15,45],['Conta de luz',150,25],['Jogo / app',250,40],['Mochila',100,35],['Chocolate / doces',10,38],['Bicicleta',600,32],['Salário de estágio (desconto IR)',2000,7.5],['Prêmio em dinheiro (desconto IR)',1000,30]];
+$('#det-chips').innerHTML=ITEMS.map(([n],i)=>`<button class="chip" data-i="${i}" aria-pressed="false">${n}</button>`).join('');
+function det(){const p=+$('#det-p').value||0,t=Math.min(100,Math.max(0,+$('#det-t').value||0));const imp=p*t/100;
+  $('#det-out').innerHTML=`<div class="bar" aria-label="Divisão do preço"><div class="seg-prod" style="width:${100-t}%">Produto ${brl(p-imp)}</div><div class="seg-tax" style="width:${t}%">${t>=8?'Imposto '+brl(imp):''}</div></div>
+  <div class="stats"><div class="stat"><small>Preço</small><div class="v">${brl(p)}</div></div><div class="stat"><small>Imposto (${pct(t)})</small><div class="v" style="color:var(--tax)">${brl(imp)}</div></div><div class="stat"><small>Sobra sem imposto</small><div class="v">${brl(p-imp)}</div></div></div>
+  <div class="out mini" style="margin-top:12px">Conta: ${p.toLocaleString('pt-BR')} × ${(t/100).toLocaleString('pt-BR')} = ${brl(imp)}</div>`}
+$$('#det-chips .chip').forEach(b=>b.onclick=()=>{const it=ITEMS[+b.dataset.i];$('#det-p').value=it[1];$('#det-t').value=it[2];$$('#det-chips .chip').forEach(c=>c.setAttribute('aria-pressed',c===b));det()});
+$('#det-p').oninput=$('#det-t').oninput=det;$$('#det-chips .chip')[1].click();
+const INC=[['Salário de um estágio','Renda','Imposto de Renda sobre ganhos.'],['Casa própria','Patrimônio','IPTU incide sobre imóveis.'],['Carro','Patrimônio','IPVA incide sobre veículos.'],['Pacote de biscoito','Consumo','ICMS embutido no preço.'],['Botijão de gás','Consumo','ICMS embutido no preço.'],['Prêmio de um torneio','Renda','Desconto de Imposto de Renda sobre prêmios.']];
+let ii=0,isc=0;
+function inc(){const b=$('#inc-box');if(ii>=INC.length){b.innerHTML=`<div class="out"><div class="big">${isc} de ${INC.length}</div><button class="btn" id="inc-r">Jogar de novo</button></div>`;$('#inc-r').onclick=()=>{ii=0;isc=0;inc()};return}
+  b.innerHTML=`<p class="q">${INC[ii][0]}: o tributo incide sobre...</p><div class="chips" id="inc-c">${['Renda','Patrimônio','Consumo'].map(k=>`<button class="chip" data-k="${k}">${k}</button>`).join('')}</div><div id="inc-fb"></div>`;
+  $$('#inc-c .chip').forEach(c=>c.onclick=()=>{const ok=c.dataset.k===INC[ii][1];if(ok)isc++;$$('#inc-c .chip').forEach(x=>{x.disabled=true;if(x.dataset.k===INC[ii][1])x.classList.add('ok')});if(!ok)c.classList.add('no');
+    $('#inc-fb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Certo! ':'Não. '}${INC[ii][2]}</div><button class="btn" id="inc-n" style="margin-top:10px">Próxima</button>`;$('#inc-n').onclick=()=>{ii++;inc()}})}
+inc();
+const ESF=[['Federal (União)','IR, IPI, II, IOF','SUS, universidades federais, rodovias federais.'],['Estadual','ICMS, IPVA, ITCMD','Polícia Militar, escolas estaduais, hospitais regionais.'],['Municipal','IPTU, ISS, ITBI','Postos de saúde do bairro, limpeza urbana, creches municipais.']];
+$('#esf-body').innerHTML=ESF.map(r=>`<tr tabindex="0" style="cursor:pointer"><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+const ESFN=['O governo federal arrecada tributos de alcance nacional, como o Imposto de Renda.','O estado arrecada o ICMS (consumo) e o IPVA (carros), e financia a polícia militar e as escolas estaduais.','O município arrecada o IPTU (imóveis) e o ISS (serviços) e cuida do que é local: postos de saúde, limpeza urbana e creches.'];
+$$('#esf-body tr').forEach((tr,i)=>{const f=()=>{$$('#esf-body tr').forEach(r=>r.style.background='');tr.style.background='var(--accent-soft)';$('#esf-note').textContent=ESFN[i]};tr.onclick=f;tr.onkeydown=e=>{if(e.key==='Enter')f()}});
+
+/* ---------- Aula 47 ---------- */
+const PIL=[['Saúde','Vacinação, SUS e SAMU.','Filas maiores e menos atendimento de emergência.',25],['Educação','Escolas, merenda, livros e professores.','Escolas sem manutenção e merenda reduzida.',25],['Segurança','Policiamento, bombeiros e iluminação.','Ruas escuras e menos socorro.',25],['Infraestrutura','Asfalto, transporte, praças e saneamento.','Buracos, ônibus precários e esgoto sem tratamento.',25]];
+const pv=PIL.map(p=>p[3]);
+$('#orc-sliders').innerHTML=PIL.map((p,i)=>`<label class="f card">${p[0]}: <b id="ov${i}">${pv[i]}</b> pontos<input type="range" min="0" max="100" value="${pv[i]}" data-i="${i}"></label>`).join('');
+function orc(){const tot=pv.reduce((a,b)=>a+b,0);
+  $('#orc-total').className='fb '+(tot===100?'ok':'no');$('#orc-total').textContent=tot===100?'Total: 100 pontos. Orçamento fechado.':`Total: ${tot} pontos. Ajuste para chegar a 100.`;
+  $('#orc-out').innerHTML=PIL.map((p,i)=>{const v=tot?pv[i]/Math.max(tot,1)*10000000:0;const low=pv[i]<15;return `<div class="card"><h3>${p[0]}</h3><div class="big">${brl(tot===100?pv[i]*100000:pv[i]*100000)}</div><div class="bar" style="height:16px"><div class="seg-prod" style="width:${Math.min(100,pv[i])}%"></div></div><p class="mini" style="margin:0">${low?'Alerta: '+p[2]:p[1]}</p></div>`}).join('')}
+$$('#orc-sliders input').forEach(r=>r.oninput=()=>{pv[+r.dataset.i]=+r.value;$('#ov'+r.dataset.i).textContent=r.value;orc()});
+$('#orc-eq').onclick=()=>{pv.fill(25);$$('#orc-sliders input').forEach((r,i)=>{r.value=25;$('#ov'+i).textContent=25});orc()};orc();
+const CI=[['1. População paga','Pelo consumo e pela renda. Todos pagam, inclusive quem compra um lanche.'],['2. Estado organiza','Define as prioridades de aplicação dos recursos.'],['3. Aplicação nos serviços','Saúde, educação, segurança e obras.'],['4. Cidadão fiscaliza','Acompanha pelo Portal da Transparência se o serviço foi entregue com qualidade.']];
+let ci=0;$('#ciclo-steps').innerHTML=CI.map(c=>`<div class="step">${c[0]}</div>`).join('');
+function ciclo(){$$('#ciclo-steps .step').forEach((s,i)=>s.classList.toggle('on',i===ci));$('#ciclo-txt').textContent=CI[ci][1];$('#ciclo-prev').disabled=ci===0;$('#ciclo-next').textContent=ci===CI.length-1?'Recomeçar':'Próximo'}
+$('#ciclo-prev').onclick=()=>{ci--;ciclo()};$('#ciclo-next').onclick=()=>{ci=ci===CI.length-1?0:ci+1;ciclo()};ciclo();
+const AUD=[['Qual serviço público essencial falhou?','Infraestrutura (pavimentação) e segurança (iluminação).'],['Qual o impacto para a comunidade?','Risco de acidentes e de crimes à noite; alunos e moradores inseguros.'],['Como exigir a melhoria com base nos impostos pagos?','Registrar a reclamação na prefeitura, consultar o Portal da Transparência e cobrar os representantes.']];
+$('#aud-box').innerHTML=AUD.map((a,i)=>`<div class="card"><b>${a[0]}</b><div style="margin-top:8px"><button class="btn alt" data-i="${i}">Ver resposta modelo</button></div><p class="mini" id="au${i}" style="margin-top:8px" hidden>${a[1]}</p></div>`).join('');
+$$('#aud-box button').forEach(b=>b.onclick=()=>{const p=$('#au'+b.dataset.i);p.hidden=!p.hidden});
+
+/* ---------- Aula 48 ---------- */
+function chart(vals,w=600,h=240){const L=44,R=16,T=16,B=30;const max=Math.max(...vals)*1.1;const x=i=>L+(w-L-R)*i/(vals.length-1||1),y=v=>T+(h-T-B)*(1-v/max);
+  const pts=vals.map((v,i)=>`${x(i)},${y(v)}`).join(' ');const ticks=[0,.25,.5,.75,1].map(f=>f*max);
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="Preço ao longo dos anos" style="min-width:420px">
+  ${ticks.map(t=>`<line x1="${L}" x2="${w-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${Math.round(t)}</text>`).join('')}
+  ${vals.map((v,i)=>`<text x="${x(i)}" y="${h-8}" text-anchor="middle">${i}</text>`).join('')}
+  <polyline points="${pts}" fill="none" stroke="var(--tax)" stroke-width="3" stroke-linejoin="round"/>
+  ${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="var(--tax)"/>`).join('')}
+  <text x="${x(vals.length-1)}" y="${y(vals[vals.length-1])-10}" text-anchor="end" style="fill:var(--ink);font-weight:700">${brl(vals[vals.length-1])}</text>
+  <text x="${(L+w-R)/2}" y="${h}" text-anchor="middle" style="font-size:11px"> </text></svg><div class="mini" style="text-align:center">Anos (preço em R$)</div></div>`}
+function inf(){const p=+$('#inf-p').value||1,d=+$('#inf-d').value||1,i=+$('#inf-i').value,n=+$('#inf-n').value;$('#inf-iv').textContent=i;$('#inf-nv').textContent=n;
+  const vals=Array.from({length:n+1},(_,k)=>p*Math.pow(1+i/100,k));const pf=vals[n];const b0=Math.floor(d/p),b1=Math.floor(d/pf);
+  $('#inf-chart').innerHTML=chart(vals);
+  $('#inf-stats').innerHTML=[['Preço hoje',brl(p)],[`Preço em ${n} anos`,brl(pf)],['Alta total',pct((pf/p-1)*100)],['Compra hoje',b0+' itens'],[`Compra em ${n} anos`,b1+' itens']].map(([k,v])=>`<div class="stat"><small>${k}</small><div class="v">${v}</div></div>`).join('');
+  const cap=Math.min(b0,60);const sc=cap/Math.max(b0,1);const show=Math.round(b1*sc);
+  $('#inf-blocks').innerHTML=`<div class="mini">Hoje: ${b0}</div><div class="blocks">${'<i></i>'.repeat(cap)}</div><div class="mini">Em ${n} anos: ${b1}</div><div class="blocks after">${'<i></i>'.repeat(show)}${'<i class="gone"></i>'.repeat(Math.max(0,cap-show))}</div>`}
+['#inf-p','#inf-d','#inf-i','#inf-n'].forEach(s=>$(s).oninput=inf);inf();
+function imp(){const c=+$('#imp-c').value||0,i=+$('#imp-i').value,t=+$('#imp-t').value;$('#imp-iv').textContent=i;$('#imp-tv').textContent=t;
+  const pr=t<100?c/(1-t/100):c;const c2=c*(1+i/100),pr2=t<100?c2/(1-t/100):c2;const t1=pr-c,t2=pr2-c2;
+  $('#imp-out').innerHTML=[['Preço antes',brl(pr)],['Imposto antes',brl(t1)],['Custo depois da inflação',brl(c2)],['Preço depois',brl(pr2)],['Imposto depois',brl(t2)],['Aumento do imposto',brl(t2-t1)]].map(([k,v])=>`<div class="stat"><small>${k}</small><div class="v">${v}</div></div>`).join('')+`<div class="stat" style="grid-column:1/-1"><small>Leitura</small>O custo subiu ${pct(i)} e o preço final subiu ${pct((pr2/pr-1)*100)}. O imposto, que é parte do preço, subiu junto.</div>`}
+['#imp-c','#imp-i','#imp-t'].forEach(s=>$(s).oninput=imp);imp();
+const PLAN=[['Cortar itens supérfluos',true,'Elimina R$ 30 de itens sem falta e a compra volta a caber nos R$ 200.'],['Substituir marcas caras',true,'Trocar por marcas mais acessíveis reduz o custo mantendo os itens da lista.'],['Usar o cartão e acumular dívidas',false,'Os R$ 30 viram dívida e crescem com juros. Exemplo com 10% ao mês:']];
+$('#plan-chips').innerHTML=PLAN.map((p,i)=>`<button class="chip" data-i="${i}">${p[0]}</button>`).join('');
+$$('#plan-chips .chip').forEach(b=>b.onclick=()=>{const p=PLAN[+b.dataset.i];$$('#plan-chips .chip').forEach(c=>c.className='chip');b.classList.add(p[1]?'ok':'no');
+  let ex='';if(!p[1]){let d=30;ex=`<div class="tablewrap" style="margin-top:8px"><table style="min-width:300px"><tr><th>Mês</th><th>Dívida</th></tr>${[0,1,2,3].map(m=>{const v=30*Math.pow(1.1,m);return `<tr><td>${m===0?'Início':'Após '+m}</td><td>${brl(v)}</td></tr>`}).join('')}</table></div>`}
+  $('#plan-out').innerHTML=`<div class="fb ${p[1]?'ok':'no'}">${p[1]?'Boa ideia. ':'Má ideia. '}${p[2]}</div>${ex}`});
+const CE=[['Imposto só é pago por quem é adulto e trabalha.',false,'Errado: todos pagam ao consumir.'],['Se a inflação sobe, o planejamento financeiro precisa ser ajustado.',true,'Certo.'],['Comprar parcelado evita o impacto da inflação.',false,'Errado: pode incluir juros e comprometer a renda futura.']];
+$('#ce-box').innerHTML=CE.map((c,i)=>`<div class="card" style="margin-bottom:10px"><p class="q" style="margin-bottom:8px">${c[0]}</p><div class="chips" data-i="${i}"><button class="chip" data-v="1">Certo</button><button class="chip" data-v="0">Errado</button></div><div class="ce-fb"></div></div>`).join('');
+$$('#ce-box .chips').forEach(w=>w.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const c=CE[+w.dataset.i];const ok=(b.dataset.v==='1')===c[1];w.querySelectorAll('.chip').forEach(x=>x.disabled=true);b.classList.add(ok?'ok':'no');w.nextElementSibling.innerHTML=`<div class="fb ${ok?'ok':'no'}">${c[2]}</div>`}));
+
+/* ---------- Quiz final ---------- */
+const QZ=[
+ ['Mariana vende brigadeiros na escola. Isso é um exemplo de:',['Emprego formal','Trabalho que gera renda, sem vínculo formal','Renda sem trabalho','Trabalho voluntário'],1],
+ ['No Jovem Aprendiz (Lei nº 10.097/2000):',['Qualquer idade, sem escola','14 a 24 anos incompletos, até 2 anos de contrato, escola obrigatória','Sem direito a FGTS','Só aulas teóricas'],1],
+ ['IPTU e IPVA incidem sobre:',['A renda','O patrimônio','O consumo','Serviços diretos'],1],
+ ['Verdadeiro ou falso: soft skills são habilidades técnicas, como programar.',['Verdadeiro','Falso'],1],
+ ['Verdadeiro ou falso: todo trabalho é um emprego.',['Verdadeiro','Falso'],1],
+ ['Verdadeiro ou falso: inflação é o aumento contínuo e geral dos preços e reduz o poder de compra.',['Verdadeiro','Falso'],0],
+ ['Verdadeiro ou falso: o imposto de um videogame vai direto para o bolso do prefeito.',['Verdadeiro','Falso'],1],
+ ['Tributos ligados a serviços públicos específicos, como coleta de lixo:',['Impostos','Taxas','Hard skills','Inflação'],1],
+ ['SAMU atendendo uma emergência é retorno social em:',['Saúde','Educação','Segurança','Infraestrutura'],0],
+ ['Tênis de R$ 200 com 35% de imposto: quanto sobra sem o imposto?',['R$ 165,00','R$ 70,00','R$ 130,00','R$ 235,00'],2],
+ ['O ICMS e o IPVA são arrecadados por qual esfera?',['Federal','Estadual','Municipal','Nenhuma'],1],
+ ['Compra de R$ 200 agora custa R$ 230 por causa da inflação. Qual atitude é a melhor?',['Usar o cartão e acumular dívida','Ignorar o aumento','Cortar supérfluos e substituir marcas caras','Parcelar para fugir da inflação'],2]];
+let qi=0,qs=0;
+function quiz(){const b=$('#quiz-box');
+  if(qi>=QZ.length){const f=qs>=10?'Excelente! Você domina o conteúdo.':qs>=7?'Muito bom. Revise as aulas dos erros e tente de novo.':'Vale reler as aulas e jogar os simuladores.';b.innerHTML=`<div class="big">${qs} de ${QZ.length}</div><p>${f}</p><button class="btn" id="qz-r">Refazer</button>`;$('#qz-r').onclick=()=>{qi=0;qs=0;quiz()};return}
+  const [q,o,c]=QZ[qi];b.innerHTML=`<div class="progress"><div style="width:${qi/QZ.length*100}%"></div></div><div class="mini">Pergunta ${qi+1} de ${QZ.length}</div><p class="q">${esc(q)}</p><div class="opts">${o.map((t,i)=>`<button class="opt" data-i="${i}">${esc(t)}</button>`).join('')}</div><div id="qz-fb"></div>`;
+  $$('#quiz-box .opt').forEach(x=>x.onclick=()=>{const i=+x.dataset.i;const ok=i===c;if(ok)qs++;$$('#quiz-box .opt').forEach(y=>{y.disabled=true;if(+y.dataset.i===c)y.classList.add('ok')});if(!ok)x.classList.add('no');
+    $('#qz-fb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Certo!':'Resposta correta: '+esc(o[c])}</div><button class="btn" id="qz-n" style="margin-top:10px">${qi===QZ.length-1?'Ver resultado':'Próxima'}</button>`;$('#qz-n').onclick=()=>{qi++;quiz()}})}
+quiz();
+
+show(location.hash.slice(1));
+</script>
+
+</body></html>
